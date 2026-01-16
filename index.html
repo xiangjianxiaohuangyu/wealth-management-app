@@ -29,7 +29,7 @@
         </li>
       </ul>
       <div class="sidebar-footer">
-        <p>版本 1.0.0</p>
+        <p>版本 <span id="app-version">加载中...</span></p>
       </div>
     </nav>
 
@@ -91,6 +91,10 @@
               <label for="total-investment">总投资金额</label>
               <input type="text" id="total-investment" value="380000" placeholder="请输入总投资金额">
               <span class="currency-symbol">¥</span>
+              <div class="unallocated-info">
+                <span class="unallocated-label">未分配:</span>
+                <span class="unallocated-amount" id="unallocated-amount">¥ 0.00</span>
+              </div>
             </div>
           </div>
 
@@ -187,7 +191,8 @@
         <div id="rebalance-suggestions"></div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" id="close-modal-btn">关闭</button>
+        <button class="btn btn-success" id="confirm-rebalance-btn">确认</button>
+        <button class="btn btn-secondary" id="close-modal-btn">取消</button>
       </div>
     </div>
   </div>

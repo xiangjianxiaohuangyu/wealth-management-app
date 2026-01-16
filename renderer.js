@@ -36,6 +36,9 @@ let appState = {
   nextId: 5
 };
 
+// 图表交互状态
+const chartState = {};
+
 // 从 localStorage 加载数据
 function loadState() {
   const saved = localStorage.getItem('wealthManagementState');
@@ -53,6 +56,190 @@ function saveState() {
   localStorage.setItem('wealthManagementState', JSON.stringify(appState));
 }
 
+// 加载应用版本号
+async function loadAppVersion() {
+  try {
+    const version = await window.electronInvoke('get-app-version');
+    const versionElement = document.getElementById('app-version');
+    if (versionElement) {
+      versionElement.textContent = version;
+    }
+  } catch (error) {
+    console.error('Error loading app version:', error);
+    const versionElement = document.getElementById('app-version');
+    if (versionElement) {
+      versionElement.textContent = '0.0.0';
+    }
+  }
+}
+
+// ========== 自动更新功能 ==========
+
+// 设置更新监听器
+function setupUpdateListeners() {
+  if (window.require) {
+    const { ipcRenderer } = window.require('electron');
+
+    // 发现新版本
+    ipcRenderer.on('update-available', (event, info) => {
+      showUpdateNotification(info);
+    });
+
+    // 没有新版本
+    ipcRenderer.on('update-not-available', (event, info) => {
+      showNotification('当前已是最新版本', 'success');
+    });
+
+    // 下载进度
+    ipcRenderer.on('update-download-progress', (event, progress) => {
+      showDownloadProgress(progress);
+    });
+
+    // 更新下载完成
+    ipcRenderer.on('update-downloaded', (event, info) => {
+      showUpdateReadyNotification(info);
+    });
+
+    // 更新错误
+    ipcRenderer.on('update-error', (event, error) => {
+      // 如果是 GitHub 上没有发布版本，显示为已是最新版本
+      if (error.message && error.message.includes('No published version on GitHub')) {
+        showNotification('已是最新版本', 'success');
+      } else {
+        showNotification(`更新失败: ${error.message}`, 'error');
+      }
+    });
+  }
+}
+
+// 显示更新通知
+function showUpdateNotification(info) {
+  const notification = document.createElement('div');
+  notification.className = 'update-notification';
+  notification.innerHTML = `
+    <div class="update-content">
+      <div class="update-header">
+        <span class="update-icon">🎉</span>
+        <h3>发现新版本 v${info.version}</h3>
+        <button class="close-btn" onclick="this.parentElement.parentElement.remove()">×</button>
+      </div>
+      <div class="update-body">
+        <p class="update-message">新版本已发布，点击下方按钮立即更新</p>
+        <div class="update-actions">
+          <button class="btn btn-primary" id="btn-download-update">
+            <span>⬇️</span> 立即更新
+          </button>
+          <button class="btn btn-secondary" id="btn-later-update">
+            稍后提醒
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(notification);
+
+  // 绑定按钮事件
+  document.getElementById('btn-download-update').addEventListener('click', async () => {
+    notification.remove();
+    try {
+      await window.electronInvoke('download-update');
+      showNotification('开始下载更新...', 'info');
+    } catch (error) {
+      showNotification('下载更新失败', 'error');
+    }
+  });
+
+  document.getElementById('btn-later-update').addEventListener('click', () => {
+    notification.remove();
+  });
+}
+
+// 显示下载进度
+function showDownloadProgress(progress) {
+  let progressNotification = document.querySelector('.download-progress-notification');
+
+  if (!progressNotification) {
+    progressNotification = document.createElement('div');
+    progressNotification.className = 'notification download-progress-notification';
+    document.body.appendChild(progressNotification);
+  }
+
+  progressNotification.innerHTML = `
+    <div class="progress-content">
+      <div class="progress-header">
+        <span class="progress-icon">⬇️</span>
+        <h4>正在下载更新...</h4>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" style="width: ${progress.percent}%"></div>
+      </div>
+      <div class="progress-info">
+        <span>${Math.floor(progress.percent)}%</span>
+        <span>${formatBytes(progress.transferred)} / ${formatBytes(progress.total)}</span>
+        <span>${formatBytes(progress.speed)}/s</span>
+      </div>
+    </div>
+  `;
+}
+
+// 格式化字节数
+function formatBytes(bytes) {
+  if (bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+}
+
+// 显示更新就绪通知
+function showUpdateReadyNotification(info) {
+  // 移除下载进度通知
+  const progressNotification = document.querySelector('.download-progress-notification');
+  if (progressNotification) {
+    progressNotification.remove();
+  }
+
+  const notification = document.createElement('div');
+  notification.className = 'update-notification';
+  notification.innerHTML = `
+    <div class="update-content">
+      <div class="update-header">
+        <span class="update-icon">✅</span>
+        <h3>更新已下载完成</h3>
+        <button class="close-btn" onclick="this.parentElement.parentElement.remove()">×</button>
+      </div>
+      <div class="update-body">
+        <p class="update-message">版本 v${info.version} 已下载完毕，应用将重启以安装更新</p>
+        <div class="update-actions">
+          <button class="btn btn-success" id="btn-install-update">
+            <span>🔄</span> 立即重启
+          </button>
+          <button class="btn btn-secondary" id="btn-skip-update">
+            稍后重启
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(notification);
+
+  // 绑定按钮事件
+  document.getElementById('btn-install-update').addEventListener('click', async () => {
+    notification.remove();
+    try {
+      await window.electronInvoke('install-update');
+    } catch (error) {
+      showNotification('安装更新失败', 'error');
+    }
+  });
+
+  document.getElementById('btn-skip-update').addEventListener('click', () => {
+    notification.remove();
+  });
+}
+
 // 初始化应用
 function init() {
   loadState();
@@ -67,7 +254,16 @@ function init() {
     totalInvestmentInput.value = formatNumberWithCommas(appState.totalInvestment);
   }
 
+  // 初始化未分配金额显示
+  updateUnallocatedAmount();
+
   drawAllCharts();
+
+  // 加载版本号
+  loadAppVersion();
+
+  // 设置自动更新监听
+  setupUpdateListeners();
 }
 
 // 导航设置
@@ -192,6 +388,7 @@ function setupEventListeners() {
   // 关闭平衡模态框
   document.getElementById('close-modal').addEventListener('click', closeModal);
   document.getElementById('close-modal-btn').addEventListener('click', closeModal);
+  document.getElementById('confirm-rebalance-btn').addEventListener('click', confirmRebalance);
 
   // 保存计划模态框
   document.getElementById('close-save-modal').addEventListener('click', closeSavePlanModal);
@@ -212,6 +409,7 @@ function setupEventListeners() {
     appState.currency = e.target.value;
     saveState();
     updateOverview();
+    updateUnallocatedAmount();
   });
 
   document.getElementById('deviation-threshold').addEventListener('change', (e) => {
@@ -241,6 +439,7 @@ function updateTotalInvestment(value) {
   renderAssetsList();
   updateOverview();
   drawAllCharts();
+  updateUnallocatedAmount();
 }
 
 // 计算计划总金额
@@ -254,6 +453,44 @@ function getPlannedTotal() {
     }
   });
   return total;
+}
+
+// 更新未分配金额显示
+function updateUnallocatedAmount() {
+  const totalInvestment = appState.totalInvestment;
+  const totalPlanned = getPlannedTotal();
+  const unallocated = totalInvestment - totalPlanned;
+
+  const unallocatedElement = document.getElementById('unallocated-amount');
+  const unallocatedLabel = document.querySelector('.unallocated-label');
+
+  if (!unallocatedElement || !unallocatedLabel) {
+    return;
+  }
+
+  const symbols = { CNY: '¥', USD: '$', EUR: '€' };
+  const symbol = symbols[appState.currency] || '¥';
+
+  // 使用小的容差值来判断是否为0（避免浮点数精度问题）
+  const tolerance = 0.01;
+
+  if (Math.abs(unallocated) < tolerance) {
+    // 未分配金额为0，隐藏整个区域
+    unallocatedLabel.parentElement.style.display = 'none';
+    unallocatedElement.classList.remove('over-budget');
+  } else if (unallocated < 0) {
+    // 分配超额，显示"分配超额"
+    unallocatedLabel.parentElement.style.display = 'flex';
+    unallocatedLabel.textContent = '分配超额:';
+    unallocatedElement.textContent = `${symbol} ${Math.abs(unallocated).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    unallocatedElement.classList.add('over-budget');
+  } else {
+    // 未分配，显示"未分配"
+    unallocatedLabel.parentElement.style.display = 'flex';
+    unallocatedLabel.textContent = '未分配:';
+    unallocatedElement.textContent = `${symbol} ${unallocated.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    unallocatedElement.classList.remove('over-budget');
+  }
 }
 
 // 格式化货币
@@ -352,6 +589,12 @@ function createAssetRow(asset) {
   const nameInput = document.createElement('input');
   nameInput.type = 'text';
   nameInput.value = asset.name;
+  nameInput.style.fontSize = '16px';
+  nameInput.style.padding = '4px 6px';
+  nameInput.style.width = '70px';
+  nameInput.style.maxWidth = '150px';
+
+
   nameInput.addEventListener('input', (e) => {
     updateAssetName(asset.id, e.target.value);
   });
@@ -364,7 +607,8 @@ function createAssetRow(asset) {
 
   const nameCell = document.createElement('div');
   nameCell.className = 'row-cell';
-  nameCell.style.flex = '2';
+  nameCell.style.flex = '1';
+  nameCell.style.minWidth = '120px';
   nameCell.appendChild(nameInput);
 
   // 创建模式切换
@@ -372,12 +616,12 @@ function createAssetRow(asset) {
   modeToggle.className = 'mode-toggle';
 
   const percentageBtn = document.createElement('button');
-  percentageBtn.textContent = '百分比';
+  percentageBtn.textContent = '固定百分比';
   percentageBtn.className = asset.mode === 'percentage' ? 'active' : '';
   percentageBtn.addEventListener('click', () => updateAssetMode(asset.id, 'percentage'));
 
   const amountBtn = document.createElement('button');
-  amountBtn.textContent = '金额';
+  amountBtn.textContent = '固定金额';
   amountBtn.className = asset.mode === 'amount' ? 'active' : '';
   amountBtn.addEventListener('click', () => updateAssetMode(asset.id, 'amount'));
 
@@ -398,8 +642,11 @@ function createAssetRow(asset) {
     : (totalInvestment > 0 ? (asset.plannedValue / totalInvestment * 100) : 0);
   plannedInput.value = displayPercentage.toFixed(2);
   plannedInput.step = '0.01';
-  plannedInput.style.flex = '1';
-  plannedInput.style.minWidth = '0';
+  plannedInput.style.flex = '0';
+  plannedInput.style.width = '70px';
+  plannedInput.style.minWidth = '80px';
+  plannedInput.style.fontSize = '13px';
+  plannedInput.style.padding = '6px 10px';
   plannedInput.disabled = asset.mode !== 'percentage'; // 百分比模式可编辑
   plannedInput.addEventListener('input', (e) => {
     updateAssetPlanned(asset.id, e.target.value);
@@ -424,13 +671,13 @@ function createAssetRow(asset) {
   plannedCell.style.alignItems = 'center';
   plannedCell.appendChild(plannedInput);
 
-  if (asset.mode === 'percentage') {
-    const percentLabel = document.createElement('span');
-    percentLabel.textContent = '%';
-    percentLabel.style.marginLeft = '4px';
-    percentLabel.style.fontSize = '12px';
-    plannedCell.appendChild(percentLabel);
-  }
+  // 始终显示 % 符号
+  const percentLabel = document.createElement('span');
+  percentLabel.textContent = '%';
+  percentLabel.style.marginLeft = '4px';
+  percentLabel.style.fontSize = '12px';
+  percentLabel.style.color = 'var(--text-secondary)';
+  plannedCell.appendChild(percentLabel);
 
   // 创建计划金额显示（带人民币符号）
   const plannedAmountWrapper = document.createElement('div');
@@ -577,6 +824,7 @@ function addAsset() {
   saveState();
   renderAssetsList();
   drawAllCharts();
+  updateUnallocatedAmount();
 }
 
 // 删除资产
@@ -588,6 +836,7 @@ function deleteAsset(id) {
       saveState();
       renderAssetsList();
       drawAllCharts();
+      updateUnallocatedAmount();
     }
   );
 }
@@ -636,6 +885,7 @@ function updateAssetMode(id, mode) {
     saveState();
     renderAssetsList();
     drawAllCharts();
+    updateUnallocatedAmount();
   }
 }
 
@@ -656,17 +906,38 @@ function updateAssetPlanned(id, value) {
       return; // 不更新，维持当前值
     }
 
-    // 检查总占比是否超过100%
-    const currentTotal = appState.assets.reduce((sum, a) => {
-      if (a.id === id) {
-        return sum + numValue;
+    // 计算除了当前资产外的所有其他百分比模式资产的总和
+    let otherPercentageTotal = 0;
+    appState.assets.forEach(a => {
+      if (a.id !== id && a.mode === 'percentage') {
+        otherPercentageTotal += a.plannedValue;
       }
-      return sum + (a.mode === 'percentage' ? a.plannedValue : 0);
-    }, 0);
+    });
 
-    if (currentTotal > 100) {
-      showNotification(`所有资产的计划占比总和不能超过100%（当前总和：${currentTotal.toFixed(2)}%）`, 'error');
-      return; // 不更新，维持当前值
+    // 计算当前资产可分配的最大百分比
+    const maxAllowedPercentage = 100 - otherPercentageTotal;
+
+    // 如果当前输入值超过最大可分配百分比
+    if (numValue > maxAllowedPercentage) {
+      // 显示警告弹窗
+      const maxPercentFormatted = maxAllowedPercentage.toFixed(2);
+
+      showNotification(
+        `分配占比超过100%！<br>该资产最大可分配占比为 <strong>${maxPercentFormatted}%</strong><br>已自动设置为最大值`,
+        'warning'
+      );
+
+      // 自动设置为最大允许值
+      numValue = maxAllowedPercentage;
+
+      // 更新输入框显示
+      const row = document.querySelector(`.asset-row[data-id="${id}"]`);
+      if (row) {
+        const plannedPercentInput = row.querySelectorAll('.row-cell')[2].querySelector('input');
+        if (plannedPercentInput) {
+          plannedPercentInput.value = numValue.toFixed(2);
+        }
+      }
     }
 
     asset.plannedValue = numValue;
@@ -675,6 +946,7 @@ function updateAssetPlanned(id, value) {
     updateAssetRowDisplay(asset);
     updateOverview();
     drawAllCharts();
+    updateUnallocatedAmount();
   }
 }
 
@@ -695,12 +967,53 @@ function updateAssetPlannedAmount(id, value) {
       return; // 不更新，维持当前值
     }
 
+    // 计算除了当前资产外的所有其他资产的计划金额总和
+    let otherAssetsTotal = 0;
+    appState.assets.forEach(a => {
+      if (a.id !== id) {
+        if (a.mode === 'percentage') {
+          otherAssetsTotal += (a.plannedValue / 100) * appState.totalInvestment;
+        } else {
+          otherAssetsTotal += a.plannedValue;
+        }
+      }
+    });
+
+    // 计算当前资产可分配的最大金额
+    const maxAllowedAmount = appState.totalInvestment - otherAssetsTotal;
+
+    // 如果当前输入值超过最大可分配金额
+    if (numValue > maxAllowedAmount) {
+      // 显示警告弹窗
+      const symbols = { CNY: '¥', USD: '$', EUR: '€' };
+      const symbol = symbols[appState.currency] || '¥';
+      const maxAmountFormatted = maxAllowedAmount.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+      showNotification(
+        `分配金额超过总投资！<br>该资产最大可分配金额为 <strong>${symbol} ${maxAmountFormatted}</strong><br>已自动设置为最大值`,
+        'warning'
+      );
+
+      // 自动设置为最大允许值
+      numValue = maxAllowedAmount;
+
+      // 更新输入框显示
+      const row = document.querySelector(`.asset-row[data-id="${id}"]`);
+      if (row) {
+        const plannedAmountInput = row.querySelectorAll('.row-cell')[3].querySelector('input');
+        if (plannedAmountInput) {
+          plannedAmountInput.value = numValue.toFixed(2);
+        }
+      }
+    }
+
     asset.plannedValue = numValue;
     saveState();
     // 更新计划占比显示
     updateAssetRowDisplay(asset);
     updateOverview();
     drawAllCharts();
+    updateUnallocatedAmount();
   }
 }
 
@@ -747,6 +1060,7 @@ function updateAssetRowDisplay(asset) {
     const plannedAmountInput = row.querySelectorAll('.row-cell')[3].querySelector('input');
     if (plannedAmountInput) {
       plannedAmountInput.value = plannedAmount.toFixed(2);
+      plannedAmountInput.disabled = false;
     }
   } else {
     plannedAmount = asset.plannedValue;
@@ -756,6 +1070,7 @@ function updateAssetRowDisplay(asset) {
     const plannedPercentInput = row.querySelectorAll('.row-cell')[2].querySelector('input');
     if (plannedPercentInput) {
       plannedPercentInput.value = plannedPercent.toFixed(2);
+      plannedPercentInput.disabled = true;
     }
   }
 
@@ -845,6 +1160,37 @@ function closeModal() {
   document.getElementById('rebalance-modal').classList.remove('active');
 }
 
+// 确认平衡：将当前金额自动调整为计划金额
+function confirmRebalance() {
+  const totalAssets = getTotalAssets();
+
+  appState.assets.forEach(asset => {
+    let plannedAmount;
+    if (asset.mode === 'percentage') {
+      plannedAmount = (asset.plannedValue / 100) * totalAssets;
+    } else {
+      plannedAmount = asset.plannedValue;
+    }
+
+    // 将当前金额设置为计划金额
+    asset.actualValue = plannedAmount;
+  });
+
+  // 保存状态
+  saveState();
+
+  // 更新UI
+  renderAssetsList();
+  updateOverview();
+  drawAllCharts();
+
+  // 关闭弹窗
+  closeModal();
+
+  // 显示成功通知
+  showNotification('已自动平衡，当前金额已调整为计划金额', 'success');
+}
+
 // 导出数据
 function exportData() {
   const dataStr = JSON.stringify(appState, null, 2);
@@ -890,13 +1236,14 @@ function resetData() {
   showConfirm(
     '确定要重置所有数据吗？<br><br><small>此操作不可恢复！</small>',
     () => {
+      const totalInvestment = 380000;
       appState = {
-        totalInvestment: 380000,
+        totalInvestment: totalInvestment,
         assets: [
-          { id: 1, name: '股票', mode: 'percentage', plannedValue: 40, actualValue: 0 },
-          { id: 2, name: '债券', mode: 'percentage', plannedValue: 30, actualValue: 0 },
-          { id: 3, name: '黄金', mode: 'percentage', plannedValue: 15, actualValue: 0 },
-          { id: 4, name: '现金', mode: 'percentage', plannedValue: 15, actualValue: 0 }
+          { id: 1, name: '股票', mode: 'percentage', plannedValue: 40, actualValue: 152000 },
+          { id: 2, name: '债券', mode: 'percentage', plannedValue: 30, actualValue: 114000 },
+          { id: 3, name: '黄金', mode: 'percentage', plannedValue: 15, actualValue: 57000 },
+          { id: 4, name: '现金', mode: 'percentage', plannedValue: 15, actualValue: 57000 }
         ],
         currency: 'CNY',
         deviationThreshold: 5,
@@ -1150,20 +1497,35 @@ async function savePlanToFile() {
 function showNotification(message, type = 'info') {
   const notification = document.createElement('div');
   notification.className = `notification notification-${type}`;
-  notification.textContent = message;
+  notification.innerHTML = message; // 改为 innerHTML 以支持 HTML 标签
+
+  // 根据类型设置背景色
+  let backgroundColor;
+  if (type === 'success') {
+    backgroundColor = 'rgba(76, 175, 80, 0.9)';
+  } else if (type === 'error') {
+    backgroundColor = 'rgba(244, 67, 54, 0.9)';
+  } else if (type === 'warning') {
+    backgroundColor = 'rgba(255, 152, 0, 0.9)';
+  } else {
+    backgroundColor = 'rgba(33, 150, 243, 0.9)';
+  }
+
   notification.style.cssText = `
     position: fixed;
     top: 20px;
     right: 20px;
     padding: 16px 24px;
     border-radius: 8px;
-    background-color: ${type === 'success' ? 'rgba(76, 175, 80, 0.9)' : type === 'error' ? 'rgba(244, 67, 54, 0.9)' : 'rgba(33, 150, 243, 0.9)'};
+    background-color: ${backgroundColor};
     color: white;
     font-size: 14px;
     font-weight: 500;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     z-index: 10000;
     animation: slideIn 0.3s ease-out;
+    max-width: 400px;
+    line-height: 1.5;
   `;
 
   document.body.appendChild(notification);

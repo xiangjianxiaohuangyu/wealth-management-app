@@ -1,6 +1,13 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const fs = require('fs');
+const log = require('electron-log');
+
+// 配置日志
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = 'info';
+log.info('App starting...');
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -17,7 +24,24 @@ function createWindow() {
     autoHideMenuBar: true
   });
 
+  mainWindow = win;
   win.loadFile('index.html');
+
+  // 设置自动更新
+  setupAutoUpdater();
+
+  // 应用启动后自动检查更新（延迟1秒）
+  setTimeout(() => {
+    // 配置更新服务器地址
+    autoUpdater.setFeedURL({
+      provider: 'github',
+      owner: 'xiangjianxiaohuangyu',
+      repo: 'wealth-management-app'
+    });
+
+    // 检查更新
+    autoUpdater.checkForUpdates();
+  }, 1000);
 }
 
 // 保存计划到本地文件
@@ -113,6 +137,118 @@ ipcMain.handle('delete-plan-file', async (event, filePath) => {
     return { success: false, error: error.message };
   }
 });
+
+// 获取应用版本号
+ipcMain.handle('get-app-version', async () => {
+  const packagePath = path.join(__dirname, 'package.json');
+  console.log('Reading package.json from:', packagePath);
+  try {
+    const packageData = JSON.parse(fs.readFileSync(packagePath, 'utf-8'));
+    console.log('Package version:', packageData.version);
+    return packageData.version || '0.0.0';
+  } catch (error) {
+    console.error('Error reading package.json:', error);
+    return '0.0.0';
+  }
+});
+
+// ========== 自动更新功能 ==========
+
+let mainWindow = null;
+
+// 检查更新
+ipcMain.handle('check-for-updates', async () => {
+  try {
+    log.info('Checking for updates...');
+    autoUpdater.checkForUpdates();
+    return { success: true };
+  } catch (error) {
+    log.error('Error checking for updates:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// 下载更新
+ipcMain.handle('download-update', async () => {
+  try {
+    log.info('Downloading update...');
+    autoUpdater.downloadUpdate();
+    return { success: true };
+  } catch (error) {
+    log.error('Error downloading update:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// 安装更新并重启
+ipcMain.handle('install-update', async () => {
+  try {
+    log.info('Installing update...');
+    autoUpdater.quitAndInstall();
+    return { success: true };
+  } catch (error) {
+    log.error('Error installing update:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// 自动更新事件处理
+function setupAutoUpdater() {
+  // 当发现可用更新时
+  autoUpdater.on('update-available', (info) => {
+    log.info('Update available:', info);
+    if (mainWindow) {
+      mainWindow.webContents.send('update-available', {
+        version: info.version,
+        releaseNotes: info.releaseNotes,
+        date: info.releaseDate
+      });
+    }
+  });
+
+  // 当没有可用更新时
+  autoUpdater.on('update-not-available', (info) => {
+    log.info('Update not available:', info);
+    if (mainWindow) {
+      mainWindow.webContents.send('update-not-available', {
+        version: info.version
+      });
+    }
+  });
+
+  // 下载进度
+  autoUpdater.on('download-progress', (progress) => {
+    log.info('Download progress:', progress);
+    if (mainWindow) {
+      mainWindow.webContents.send('update-download-progress', {
+        percent: progress.percent,
+        transferred: progress.transferred,
+        total: progress.total,
+        speed: progress.bytesPerSecond
+      });
+    }
+  });
+
+  // 更新下载完成
+  autoUpdater.on('update-downloaded', (info) => {
+    log.info('Update downloaded:', info);
+    if (mainWindow) {
+      mainWindow.webContents.send('update-downloaded', {
+        version: info.version
+      });
+    }
+  });
+
+  // 更新错误
+  autoUpdater.on('error', (error) => {
+    log.error('Update error:', error);
+    if (mainWindow) {
+      mainWindow.webContents.send('update-error', {
+        message: error.message
+      });
+    }
+  });
+}
 
 app.whenReady().then(() => {
   createWindow();

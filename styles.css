@@ -232,19 +232,19 @@ body {
 }
 
 .total-investment-card label {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 700;
   color: var(--text-primary);
   min-width: 100px;
 }
 
 .total-investment-card input[type="text"] {
   flex: 0;
-  width: 200px;
+  width: 150px;
   padding: 10px 14px;
   border: 1px solid var(--border-color);
   border-radius: 6px;
-  font-size: 15px;
+  font-size: 20px;
   font-weight: 600;
   background-color: rgba(255, 255, 255, 0.1);
   color: var(--text-primary);
@@ -262,6 +262,31 @@ body {
   font-size: 20px;
   font-weight: 600;
   color: var(--primary-color);
+}
+
+.total-investment-card .unallocated-info {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 20px;
+  border-left: 1px solid var(--border-color);
+}
+
+.total-investment-card .unallocated-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.total-investment-card .unallocated-amount {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--warning-color);
+  transition: color 0.3s;
+}
+
+.total-investment-card .unallocated-amount.over-budget {
+  color: var(--danger-color);
 }
 
 .charts-section {
@@ -476,8 +501,8 @@ select:focus {
 }
 
 .action-suggestion.buy {
-  background-color: rgba(76, 175, 80, 0.2);
-  color: #69f0ae;
+  background-color: rgba(33, 150, 243, 0.2);
+  color: #64b5f6;
 }
 
 .action-suggestion.sell {
@@ -486,8 +511,8 @@ select:focus {
 }
 
 .action-suggestion.balanced {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: var(--text-secondary);
+  background-color: rgba(76, 175, 80, 0.2);
+  color: #69f0ae;
 }
 
 /* 占比显示 */
@@ -879,3 +904,149 @@ select:focus {
     grid-template-columns: 1fr;
   }
 }
+
+/* ========== 自动更新通知样式 ========== */
+
+.update-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10001;
+  max-width: 450px;
+  animation: slideIn 0.3s ease-out;
+}
+
+.update-content {
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.update-header {
+  display: flex;
+  align-items: center;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, rgba(33, 150, 243, 0.2), rgba(33, 150, 243, 0.1));
+  border-bottom: 1px solid var(--border-color);
+  gap: 12px;
+}
+
+.update-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.update-header h3 {
+  flex: 1;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.update-header .close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.update-header .close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+.update-body {
+  padding: 24px;
+}
+
+.update-message {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.update-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.update-actions .btn {
+  flex: 1;
+  justify-content: center;
+}
+
+/* 下载进度通知 */
+.download-progress-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10001;
+  max-width: 400px;
+  animation: slideIn 0.3s ease-out;
+}
+
+.progress-content {
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  padding: 20px 24px;
+}
+
+.progress-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.progress-icon {
+  font-size: 24px;
+}
+
+.progress-header h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.download-progress-notification .progress-bar-container {
+  width: 100%;
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.download-progress-notification .progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), #64b5f6);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-secondary);
+  gap: 12px;
+}
+
+.progress-info span {
+  white-space: nowrap;
+}
+
