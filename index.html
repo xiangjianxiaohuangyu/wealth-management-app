@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>财富管理 - Wealth Management</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- 左侧导航栏 -->
+    <nav class="sidebar">
+      <div class="sidebar-header">
+        <h1>财富管理</h1>
+        <p class="subtitle">Wealth Management</p>
+      </div>
+      <ul class="nav-menu">
+        <li class="nav-item active" data-page="overview">
+          <span class="icon">📊</span>
+          <span class="text">资产总览</span>
+        </li>
+        <li class="nav-item" data-page="planning">
+          <span class="icon">📋</span>
+          <span class="text">计划编辑</span>
+        </li>
+        <li class="nav-item" data-page="settings">
+          <span class="icon">⚙️</span>
+          <span class="text">设置</span>
+        </li>
+      </ul>
+      <div class="sidebar-footer">
+        <p>版本 1.0.0</p>
+      </div>
+    </nav>
+
+    <!-- 右侧主工作区 -->
+    <main class="main-content">
+      <!-- 资产总览页面 -->
+      <div id="page-overview" class="page active">
+        <div class="page-header">
+          <h2>资产总览</h2>
+          <p class="description">查看您的整体资产状况</p>
+        </div>
+        <div class="overview-content">
+          <div class="summary-cards">
+            <div class="summary-card">
+              <div class="card-icon">💰</div>
+              <div class="card-content">
+                <p class="card-label">总资产</p>
+                <p class="card-value" id="total-assets">¥ 0.00</p>
+              </div>
+            </div>
+            <div class="summary-card">
+              <div class="icon">📈</div>
+              <div class="card-content">
+                <p class="card-label">计划资产</p>
+                <p class="card-value" id="planned-assets">¥ 0.00</p>
+              </div>
+            </div>
+            <div class="summary-card">
+              <div class="icon">⚖️</div>
+              <div class="card-content">
+                <p class="card-label">偏离度</p>
+                <p class="card-value" id="deviation">0.00%</p>
+              </div>
+            </div>
+          </div>
+          <div class="charts-container">
+            <div class="chart-wrapper">
+              <h3>计划分配</h3>
+              <canvas id="planned-chart"></canvas>
+            </div>
+            <div class="chart-wrapper">
+              <h3>实际持有</h3>
+              <canvas id="actual-chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 计划编辑页面 -->
+      <div id="page-planning" class="page">
+        <div class="page-header">
+          <h2>计划编辑</h2>
+          <p class="description">管理您的投资组合配置</p>
+        </div>
+        <div class="planning-content">
+          <!-- 总投资金额设置 -->
+          <div class="total-investment-section">
+            <div class="total-investment-card">
+              <label for="total-investment">总投资金额</label>
+              <input type="text" id="total-investment" value="380000" placeholder="请输入总投资金额">
+              <span class="currency-symbol">¥</span>
+            </div>
+          </div>
+
+          <!-- 环形图区域 -->
+          <div class="charts-section">
+            <div class="chart-container">
+              <h3>计划分配</h3>
+              <canvas id="planned-chart-edit"></canvas>
+            </div>
+            <div class="chart-container">
+              <h3>实际持有</h3>
+              <canvas id="actual-chart-edit"></canvas>
+            </div>
+          </div>
+
+          <!-- 操作按钮 -->
+          <div class="action-buttons">
+            <button class="btn btn-primary" id="btn-add-asset">
+              <span>➕</span> 添加资产
+            </button>
+            <button class="btn btn-success" id="btn-rebalance">
+              <span>⚖️</span> 一键平衡
+            </button>
+            <button class="btn btn-secondary" id="btn-save">
+              <span>💾</span> 保存计划
+            </button>
+            <button class="btn btn-warning" id="btn-import-plan">
+              <span>📂</span> 导入计划
+            </button>
+          </div>
+
+          <!-- 资产列表 -->
+          <div class="assets-table">
+            <div class="table-header">
+              <div class="header-cell" style="flex: 2;">资产名称</div>
+              <div class="header-cell" style="flex: 1.5;">分配模式</div>
+              <div class="header-cell" style="flex: 1.5;">计划占比</div>
+              <div class="header-cell" style="flex: 1.5;">计划金额</div>
+              <div class="header-cell" style="flex: 1.5;">当前金额</div>
+              <div class="header-cell" style="flex: 2;">占比情况</div>
+              <div class="header-cell" style="flex: 1.5;">操作建议</div>
+              <div class="header-cell" style="flex: 1;">操作</div>
+            </div>
+            <div id="assets-list">
+              <!-- 资产行将通过 JavaScript 动态添加 -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 设置页面 -->
+      <div id="page-settings" class="page">
+        <div class="page-header">
+          <h2>设置</h2>
+          <p class="description">配置您的应用偏好</p>
+        </div>
+        <div class="settings-content">
+          <div class="setting-group">
+            <h3>常规设置</h3>
+            <div class="setting-item">
+              <label>默认货币</label>
+              <select id="currency-select">
+                <option value="CNY">人民币 (¥)</option>
+                <option value="USD">美元 ($)</option>
+                <option value="EUR">欧元 (€)</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <label>偏离度警告阈值 (%)</label>
+              <input type="number" id="deviation-threshold" value="5" min="1" max="20">
+            </div>
+          </div>
+          <div class="setting-group">
+            <h3>数据管理</h3>
+            <div class="setting-item">
+              <button class="btn btn-secondary" id="btn-export">导出数据</button>
+              <button class="btn btn-secondary" id="btn-import">导入数据</button>
+              <button class="btn btn-danger" id="btn-reset">重置数据</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- 一键平衡弹窗 -->
+  <div id="rebalance-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>一键平衡建议</h3>
+        <button class="close-btn" id="close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="rebalance-suggestions"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="close-modal-btn">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 保存计划弹窗 -->
+  <div id="save-plan-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>保存计划</h3>
+        <button class="close-btn" id="close-save-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="plan-name">计划名称</label>
+          <input type="text" id="plan-name" placeholder="例如：稳健投资计划">
+        </div>
+        <div class="info-box">
+          <p><strong>保存位置：</strong></p>
+          <p id="save-location">加载中...</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancel-save-plan">取消</button>
+        <button class="btn btn-primary" id="confirm-save-plan">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 导入计划弹窗 -->
+  <div id="import-plan-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>导入计划</h3>
+        <button class="close-btn" id="close-import-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="saved-plans-list">
+          <p class="loading">加载中...</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancel-import-plan">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
