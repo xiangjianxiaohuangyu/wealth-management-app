@@ -1,7 +1,7 @@
 {
   "name": "wealth-management-app",
-  "version": "0.0.3",
-  "main": "main.js",
+  "version": "0.0.4",
+  "main": "src/main/main.js",
   "scripts": {
     "start": "electron .",
     "build": "electron-builder"
@@ -19,12 +19,8 @@
       "repo": "wealth-management-app"
     },
     "files": [
-      "main.js",
-      "index.html",
-      "renderer.js",
-      "assets/**/*",
-      "package.json",
-      "styles.css"
+      "src/**/*",
+      "package.json"
     ],
     "directories": {
       "output": "release"
@@ -51,7 +47,9 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "wm-app-test"
+      "shortcutName": "wm-app-test",
+      "perMachine": false,
+      "runAfterFinish": true
     }
   },
   "dependencies": {

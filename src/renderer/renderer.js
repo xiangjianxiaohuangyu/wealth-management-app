@@ -102,12 +102,7 @@ function setupUpdateListeners() {
 
     // 更新错误
     ipcRenderer.on('update-error', (event, error) => {
-      // 如果是 GitHub 上没有发布版本，显示为已是最新版本
-      if (error.message && error.message.includes('No published version on GitHub')) {
-        showNotification('已是最新版本', 'success');
-      } else {
-        showNotification(`更新失败: ${error.message}`, 'error');
-      }
+      showNotification(`更新失败: ${error.message}`, 'error');
     });
   }
 }

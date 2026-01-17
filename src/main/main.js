@@ -7,6 +7,10 @@ const log = require('electron-log');
 // 配置日志
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
+
+// 配置自动更新行为
+autoUpdater.autoDownload = true;  // 自动下载更新（无需用户手动点击）
+autoUpdater.autoInstallOnAppQuit = false;  // 不在退出时自动安装，而是提示用户
 log.info('App starting...');
 
 function createWindow() {
@@ -25,7 +29,7 @@ function createWindow() {
   });
 
   mainWindow = win;
-  win.loadFile('index.html');
+  win.loadFile(path.join(__dirname, '../renderer/index.html'));
 
   // 设置自动更新
   setupAutoUpdater();
@@ -140,7 +144,7 @@ ipcMain.handle('delete-plan-file', async (event, filePath) => {
 
 // 获取应用版本号
 ipcMain.handle('get-app-version', async () => {
-  const packagePath = path.join(__dirname, 'package.json');
+  const packagePath = path.join(__dirname, '../../package.json');
   console.log('Reading package.json from:', packagePath);
   try {
     const packageData = JSON.parse(fs.readFileSync(packagePath, 'utf-8'));
@@ -184,7 +188,9 @@ ipcMain.handle('download-update', async () => {
 ipcMain.handle('install-update', async () => {
   try {
     log.info('Installing update...');
-    autoUpdater.quitAndInstall();
+    // 使用静默安装模式，isSilent=true 表示不显示安装界面
+    // isForceRunAfter=true 表示安装完成后自动运行应用
+    autoUpdater.quitAndInstall(true, true);
     return { success: true };
   } catch (error) {
     log.error('Error installing update:', error);
