@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm start)",
+      "Bash(node:*)",
+      "Bash(npx electron:*)",
+      "Bash(test:*)",
+      "Bash(tree:*)",
+      "Bash(dir:*)"
+    ]
+  }
+}

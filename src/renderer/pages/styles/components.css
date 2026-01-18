@@ -1,0 +1,590 @@
+/* ========== 布局容器 ========== */
+
+/* 应用主容器 */
+.app-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* ========== 侧边栏 ========== */
+
+/* 侧边栏容器 */
+.sidebar {
+  width: 250px;
+  background-color: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 侧边栏头部 */
+.sidebar-header {
+  padding: 24px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 侧边栏标题 */
+.sidebar-header h1 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+/* 侧边栏副标题 */
+.sidebar-header .subtitle {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* 导航菜单容器 */
+.nav-menu {
+  list-style: none;
+  flex: 1;
+  padding: 16px 0;
+}
+
+/* 导航菜单项 */
+.nav-item {
+  padding: 14px 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+}
+
+/* 导航菜单项悬停效果 */
+.nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* 导航菜单项激活状态 */
+.nav-item.active {
+  background-color: rgba(33, 150, 243, 0.2);
+  border-left-color: var(--primary-color);
+}
+
+/* 导航图标 */
+.nav-item .icon {
+  font-size: 20px;
+}
+
+/* 导航文本 */
+.nav-item .text {
+  font-size: 15px;
+}
+
+/* 侧边栏底部 */
+.sidebar-footer {
+  padding: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 12px;
+  opacity: 0.6;
+  text-align: center;
+}
+
+/* ========== 主内容区 ========== */
+
+/* 主内容区容器 */
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px;
+  background-color: var(--main-bg);
+}
+
+/* 页面容器 */
+.page {
+  display: none;
+}
+
+/* 页面激活状态 */
+.page.active {
+  display: block;
+}
+
+/* 页面头部 */
+.page-header {
+  margin-bottom: 32px;
+}
+
+/* 页面标题 */
+.page-header h2 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* 页面描述 */
+.page-header .description {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+/* ========== 模态框 ========== */
+
+/* 模态框遮罩层 */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  align-items: center;
+  justify-content: center;
+}
+
+/* 模态框激活状态 */
+.modal.active {
+  display: flex;
+}
+
+/* 模态框内容容器 */
+.modal-content {
+  background: var(--card-bg);
+  border-radius: 12px;
+  max-width: 700px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* 模态框头部 */
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 模态框标题 */
+.modal-header h3 {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* 关闭按钮 */
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  line-height: 1;
+}
+
+/* 模态框主体 */
+.modal-body {
+  padding: 24px;
+}
+
+/* 模态框底部 */
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-color);
+  text-align: right;
+}
+
+/* ========== 环形图区域 ========== */
+/* 环形图区域网格 */
+.charts-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 24px;
+}
+
+/* 环形图容器 */
+.chart-container {
+  background: var(--card-bg);
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+/* 图表画布 */
+.chart-container canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ========== 按钮样式 ========== */
+
+/* 按钮基础样式 */
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+/* 按钮悬停效果 */
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* ========== 进度条 ========== */
+
+/* 进度条容器 */
+.progress-bar-container {
+  width: 100%;
+  height: 24px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* 进度条背景 */
+.progress-bar-background {
+  position: absolute;
+  height: 100%;
+  background-color: rgba(76, 175, 80, 0.3);
+  transition: width 0.3s;
+}
+
+/* 进度条前景 */
+.progress-bar-foreground {
+  position: absolute;
+  height: 100%;
+  background-color: var(--success-color);
+  transition: width 0.3s, background-color 0.3s;
+}
+
+/* 进度条警告状态 */
+.progress-bar-container.warning .progress-bar-foreground {
+  background-color: var(--warning-color);
+}
+
+/* 进度条危险状态 */
+.progress-bar-container.danger .progress-bar-foreground {
+  background-color: var(--danger-color);
+}
+
+/* ========== 表单样式 ========== */
+
+/* 表单组 */
+.form-group {
+  margin-bottom: 20px;
+}
+
+/* 表单标签 */
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* 表单文本输入框 */
+.form-group input[type="text"] {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  transition: all 0.2s;
+}
+
+/* 表单文本输入框聚焦状态 */
+.form-group input[type="text"]:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ========== 信息框 ========== */
+
+/* 信息框容器 */
+.info-box {
+  background-color: rgba(33, 150, 243, 0.1);
+  border-left: 4px solid var(--primary-color);
+  padding: 16px;
+  border-radius: 6px;
+  margin-top: 16px;
+}
+
+/* 信息框段落 */
+.info-box p {
+  margin: 4px 0;
+  font-size: 13px;
+}
+
+/* 信息框第一段（标题） */
+.info-box p:first-child {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+/* 信息框最后一段（内容） */
+.info-box p:last-child {
+  color: var(--text-secondary);
+  font-family: 'Courier New', monospace;
+  word-break: break-all;
+}
+
+/* ========== 滚动条样式 ========== */
+
+/* 滚动条整体 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+/* 滚动条轨道 */
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* 滚动条滑块 */
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+/* 滚动条滑块悬停 */
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ========== 更新通知样式 ========== */
+
+/* 更新通知容器 */
+.update-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10001;
+  max-width: 450px;
+  animation: slideIn 0.3s ease-out;
+}
+
+/* 更新通知内容 */
+.update-content {
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+/* 更新通知头部 */
+.update-header {
+  display: flex;
+  align-items: center;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, rgba(33, 150, 243, 0.2), rgba(33, 150, 243, 0.1));
+  border-bottom: 1px solid var(--border-color);
+  gap: 12px;
+}
+
+/* 更新图标 */
+.update-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+/* 更新通知标题 */
+.update-header h3 {
+  flex: 1;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* 更新通知关闭按钮 */
+.update-header .close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+/* 更新通知关闭按钮悬停 */
+.update-header .close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+/* 更新通知主体 */
+.update-body {
+  padding: 24px;
+}
+
+/* 更新通知消息 */
+.update-message {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+/* 更新通知操作按钮组 */
+.update-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* 更新通知操作按钮 */
+.update-actions .btn {
+  flex: 1;
+  justify-content: center;
+}
+
+/* ========== 下载进度通知 ========== */
+
+/* 下载进度通知容器 */
+.download-progress-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10001;
+  max-width: 400px;
+  animation: slideIn 0.3s ease-out;
+}
+
+/* 下载进度内容 */
+.progress-content {
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  padding: 20px 24px;
+}
+
+/* 下载进度头部 */
+.progress-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+/* 下载进度图标 */
+.progress-icon {
+  font-size: 24px;
+}
+
+/* 下载进度标题 */
+.progress-header h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* 下载进度条容器 */
+.download-progress-notification .progress-bar-container {
+  width: 100%;
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+/* 下载进度条填充 */
+.download-progress-notification .progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), #64b5f6);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* 下载进度信息 */
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-secondary);
+  gap: 12px;
+}
+
+/* 下载进度信息文本 */
+.progress-info span {
+  white-space: nowrap;
+}
+
+/* ========== 通知动画 ========== */
+
+/* 滑入动画 */
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* 滑出动画 */
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+}
+
+/* 淡入动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 缩放淡入动画 */
+@keyframes scaleIn {
+  from {
+    transform: translate(-50%, -50%) scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+/* ========== 响应式设计 ========== */
+
+/* 平板及以下尺寸 */
+@media (max-width: 1024px) {
+  /* 主内容区内边距 */
+  .main-content {
+    padding: 20px;
+  }
+}

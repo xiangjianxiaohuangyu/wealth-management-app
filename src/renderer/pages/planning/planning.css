@@ -1,0 +1,472 @@
+/* ========== 计划编辑页面 ========== */
+
+/* 计划编辑内容区 */
+.planning-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ========== 总投资金额部分 ========== */
+
+/* 总投资金额区域 */
+.total-investment-section {
+  margin-bottom: 8px;
+}
+
+/* 总投资金额卡片 */
+.total-investment-card {
+  background: var(--card-bg);
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* 总投资金额标签 */
+.total-investment-card label {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  min-width: 100px;
+}
+
+/* 总投资金额输入框 */
+.total-investment-card input[type="text"] {
+  flex: 0;
+  width: 150px;
+  padding: 10px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 20px;
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  transition: all 0.2s;
+}
+
+/* 总投资金额输入框聚焦状态 */
+.total-investment-card input[type="text"]:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* 货币符号 */
+.total-investment-card .currency-symbol {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+/* 未分配信息区 */
+.total-investment-card .unallocated-info {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 20px;
+  border-left: 1px solid var(--border-color);
+}
+
+/* 未分配标签 */
+.total-investment-card .unallocated-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* 未分配金额 */
+.total-investment-card .unallocated-amount {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--warning-color);
+  transition: color 0.3s;
+}
+
+/* 未分配金额超额状态 */
+.total-investment-card .unallocated-amount.over-budget {
+  color: var(--danger-color);
+}
+
+/* ========== 操作按钮 ========== */
+
+/* 操作按钮组 */
+/* .action-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+} */
+
+/* 按钮：添加资产 */
+.btn-add-assets {
+  background-color:#2196F3;
+  color: white;
+}
+
+/* 按钮：一键平衡 */
+.btn-click-balance {
+  background-color: #4CAF50;
+  color: white;
+}
+
+/* 按钮：保存计划 */
+.btn-save-plan {
+  background-color: #95a5a6;
+  color: white;
+}
+
+/* 按钮：导入计划 */
+.btn-import-plan {
+  background-color: #bdc3c7;
+  color: white;
+}
+
+/* 按钮：确认操作 */
+.btn-confirm {
+  background-color: #4CAF50;
+  color: white;
+}
+
+/* 按钮：取消操作 */
+.btn-cancel {
+  background-color: #95a5a6;
+  color: white;
+}
+
+/* ========== 资产表格 ========== */
+
+/* 资产表格容器 */
+.assets-table {
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+/* 表格头部 */
+.table-header {
+  display: flex;
+  background-color: var(--card-bg-light);
+  padding: 16px 20px;
+  border-bottom: 2px solid var(--border-color);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+/* 表头单元格 */
+.header-cell {
+  padding: 0 12px;
+}
+
+/* 资产行 */
+.asset-row {
+  display: flex;
+  padding: 20px;
+  border-bottom: 1px solid var(--border-color);
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+/* 资产行悬停效果 */
+.asset-row:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* 资产行最后一项 */
+.asset-row:last-child {
+  border-bottom: none;
+}
+
+/* 行单元格 */
+.row-cell {
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+}
+
+/* ========== 输入框样式 ========== */
+
+/* 文本输入框 */
+input[type="text"],
+input[type="number"],
+select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+/* 移除数字输入框的增减按钮 */
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* 移除数字输入框的增减按钮（WebKit） */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* 输入框聚焦状态 */
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ========== 模式切换 ========== */
+
+/* 模式切换容器 */
+.mode-toggle {
+  display: flex;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+}
+
+/* 模式切换按钮 */
+.mode-toggle button {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+  color: var(--text-secondary);
+}
+
+/* 模式切换按钮激活状态 */
+.mode-toggle button.active {
+  background-color: var(--primary-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  color: white;
+}
+
+/* ========== 操作建议 ========== */
+
+/* 操作建议标签 */
+.action-suggestion {
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+/* 买入建议 */
+.action-suggestion.buy {
+  background-color: rgba(33, 150, 243, 0.2);
+  color: #64b5f6;
+}
+
+/* 卖出建议 */
+.action-suggestion.sell {
+  background-color: rgba(244, 67, 54, 0.2);
+  color: #ff8a80;
+}
+
+/* 平衡建议 */
+.action-suggestion.balanced {
+  background-color: rgba(76, 175, 80, 0.2);
+  color: #69f0ae;
+}
+
+/* ========== 占比显示 ========== */
+
+/* 占比显示容器 */
+.ratio-display {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 4px 0;
+}
+
+/* 占比信息行 */
+.ratio-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+/* 占比标签 */
+.ratio-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* 占比值 */
+.ratio-value {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* 占比过高 */
+.ratio-value.high {
+  color: #ff8a80;
+}
+
+/* 占比过低 */
+.ratio-value.low {
+  color: #ffcc80;
+}
+
+/* ========== 删除按钮 ========== */
+
+/* 删除按钮 */
+.btn-delete {
+  background-color: var(--danger-color);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+/* 删除按钮悬停效果 */
+.btn-delete:hover {
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+/* ========== 平衡建议列表 ========== */
+
+/* 平衡建议项 */
+.rebalance-item {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* 平衡建议项最后一项 */
+.rebalance-item:last-child {
+  border-bottom: none;
+}
+
+/* 平衡建议资产名称 */
+.rebalance-asset {
+  flex: 1;
+  font-weight: 600;
+}
+
+/* 平衡建议操作 */
+.rebalance-action {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 买入操作 */
+.rebalance-action.buy {
+  color: var(--success-color);
+}
+
+/* 卖出操作 */
+.rebalance-action.sell {
+  color: var(--danger-color);
+}
+
+/* 平衡建议金额 */
+.rebalance-amount {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* ========== 已保存计划列表 ========== */
+
+/* 计划列表容器 */
+.saved-plans-container {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* 计划项 */
+.plan-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+/* 计划项悬停效果 */
+.plan-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateX(4px);
+}
+
+/* 计划信息 */
+.plan-info {
+  flex: 1;
+}
+
+/* 计划名称 */
+.plan-name {
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 4px;
+  color: var(--text-primary);
+}
+
+/* 计划日期 */
+.plan-date {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* 计划操作按钮组 */
+.plan-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* 计划操作按钮 */
+.plan-actions .btn {
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+/* 无计划提示 */
+.no-plans {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+}
+
+/* 无计划图标 */
+.no-plans-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+/* 加载提示 */
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-secondary);
+}

@@ -4,7 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>财富管理 - Wealth Management</title>
-  <link rel="stylesheet" href="styles.css">
+  <!-- 全局基础样式 -->
+  <link rel="stylesheet" href="pages/styles/global.css">
+  <!-- 全局组件样式 -->
+  <link rel="stylesheet" href="pages/styles/components.css">
+  <!-- 资产总览页面样式 -->
+  <link rel="stylesheet" href="pages/overview/overview.css">
+  <!-- 计划编辑页面样式 -->
+  <link rel="stylesheet" href="pages/planning/planning.css">
+  <!-- 设置页面样式 -->
+  <link rel="stylesheet" href="pages/settings/setting.css">
 </head>
 <body>
   <div class="app-container">
@@ -65,13 +74,11 @@
               </div>
             </div>
           </div>
-          <div class="charts-container">
-            <div class="chart-wrapper">
-              <h3>计划分配</h3>
+          <div class="charts-section">
+            <div class="chart-container">
               <canvas id="planned-chart"></canvas>
             </div>
-            <div class="chart-wrapper">
-              <h3>实际持有</h3>
+            <div class="chart-container">
               <canvas id="actual-chart"></canvas>
             </div>
           </div>
@@ -101,27 +108,25 @@
           <!-- 环形图区域 -->
           <div class="charts-section">
             <div class="chart-container">
-              <h3>计划分配</h3>
               <canvas id="planned-chart-edit"></canvas>
             </div>
             <div class="chart-container">
-              <h3>实际持有</h3>
               <canvas id="actual-chart-edit"></canvas>
             </div>
           </div>
 
           <!-- 操作按钮 -->
           <div class="action-buttons">
-            <button class="btn btn-primary" id="btn-add-asset">
+            <button class="btn btn-add-assets" id="btn-add-asset">
               <span>➕</span> 添加资产
             </button>
-            <button class="btn btn-success" id="btn-rebalance">
+            <button class="btn btn-click-balance" id="btn-rebalance">
               <span>⚖️</span> 一键平衡
             </button>
-            <button class="btn btn-secondary" id="btn-save">
+            <button class="btn btn-save-plan" id="btn-save">
               <span>💾</span> 保存计划
             </button>
-            <button class="btn btn-warning" id="btn-import-plan">
+            <button class="btn btn-import-plan" id="btn-import-plan">
               <span>📂</span> 导入计划
             </button>
           </div>
@@ -170,9 +175,9 @@
           <div class="setting-group">
             <h3>数据管理</h3>
             <div class="setting-item">
-              <button class="btn btn-secondary" id="btn-export">导出数据</button>
-              <button class="btn btn-secondary" id="btn-import">导入数据</button>
-              <button class="btn btn-danger" id="btn-reset">重置数据</button>
+              <button class="btn btn-export-data" id="btn-export">导出数据</button>
+              <button class="btn btn-import-data" id="btn-import">导入数据</button>
+              <button class="btn btn-reset-data" id="btn-reset">重置数据</button>
             </div>
           </div>
         </div>
@@ -191,8 +196,8 @@
         <div id="rebalance-suggestions"></div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-success" id="confirm-rebalance-btn">确认</button>
-        <button class="btn btn-secondary" id="close-modal-btn">取消</button>
+        <button class="btn btn-cancel" id="close-modal-btn">取消</button>
+        <button class="btn btn-confirm" id="confirm-rebalance-btn">确认</button>
       </div>
     </div>
   </div>
@@ -215,8 +220,8 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" id="cancel-save-plan">取消</button>
-        <button class="btn btn-primary" id="confirm-save-plan">保存</button>
+        <button class="btn btn-cancel" id="cancel-save-plan">取消</button>
+        <button class="btn btn-confirm" id="confirm-save-plan">保存</button>
       </div>
     </div>
   </div>
@@ -234,11 +239,22 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" id="cancel-import-plan">取消</button>
+        <button class="btn btn-cancel" id="cancel-import-plan">取消</button>
       </div>
     </div>
   </div>
 
-  <script src="renderer.js"></script>
+  <!-- 工具类 -->
+  <script src="utils/state.js"></script>
+  <script src="utils/formatters.js"></script>
+  <script src="utils/notifications.js"></script>
+  <script src="utils/charts.js"></script>
+  <script src="utils/electron.js"></script>
+  <!-- 页面逻辑 -->
+  <script src="pages/overview/overview.js"></script>
+  <script src="pages/planning/planning.js"></script>
+  <script src="pages/settings/setting.js"></script>
+  <!-- 主入口 -->
+  <script src="main.js"></script>
 </body>
 </html>
