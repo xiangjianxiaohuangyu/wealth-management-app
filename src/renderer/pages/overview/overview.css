@@ -8,25 +8,80 @@
   margin-bottom: 32px;
 }
 
-/* 概览卡片 */
+/* 概览卡片 - 蓝色液态玻璃效果 */
 .summary-card {
-  background: var(--card-bg);
+  background:
+    linear-gradient(135deg,
+      rgba(77, 163, 255, 0.08) 0%,
+      rgba(77, 163, 255, 0.12) 50%,
+      rgba(77, 163, 255, 0.08) 100%
+    );
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
   padding: 24px;
   border-radius: 12px;
-  box-shadow: var(--shadow);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 2px 20px rgba(77, 163, 255, 0.08),
+    inset 0 -2px 20px rgba(77, 163, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   display: flex;
   align-items: center;
   gap: 16px;
-  transition: all 0.3s;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 概览卡片液态流动动画效果 */
+.summary-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(77, 163, 255, 0.08) 0%,
+    transparent 50%
+  );
+  animation: cardLiquidFlow 10s ease-in-out infinite;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+@keyframes cardLiquidFlow {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(30px, -30px) rotate(120deg);
+  }
+  66% {
+    transform: translate(-20px, 20px) rotate(240deg);
+  }
 }
 
 /* 概览卡片悬停效果 */
 .summary-card:hover {
-  box-shadow: var(--shadow-hover);
-  transform: translateY(-2px);
+  box-shadow:
+    0 12px 40px rgba(77, 163, 255, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 2px 20px rgba(77, 163, 255, 0.12);
+  transform: translateY(-4px);
+  border-color: rgba(77, 163, 255, 0.3);
 }
 
-/* 概览卡片图标基础样式 */
+.summary-card:hover::before {
+  opacity: 1;
+}
+
+/* 概览卡片图标基础样式 - 液态玻璃效果 */
 .summary-card .card-icon {
   font-size: 36px;
   width: 64px;
@@ -35,29 +90,70 @@
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background:
+    linear-gradient(135deg,
+      rgba(77, 163, 255, 0.12) 0%,
+      rgba(77, 163, 255, 0.18) 50%,
+      rgba(77, 163, 255, 0.12) 100%
+    );
+  backdrop-filter: blur(30px) saturate(150%);
+  -webkit-backdrop-filter: blur(30px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 2px 10px rgba(77, 163, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 总资产图标 - 更大且带有绿色主题 */
+/* 图标液态流动动画效果 */
+.summary-card .card-icon::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(77, 163, 255, 0.1) 0%,
+    transparent 50%
+  );
+  animation: iconLiquidFlow 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes iconLiquidFlow {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(20px, -20px) rotate(120deg);
+  }
+  66% {
+    transform: translate(-15px, 15px) rotate(240deg);
+  }
+}
+
+/* 总资产图标 - 更大尺寸 */
 .summary-card .total-assets-icon {
   font-size: 42px;
   width: 72px;
   height: 72px;
-  background: rgba(76, 175, 80, 0.15);
-  border: 1px solid rgba(76, 175, 80, 0.3);
 }
 
-/* 计划资产图标 - 蓝色主题 */
-.summary-card .planned-assets-icon {
-  background: rgba(33, 150, 243, 0.15);
-  border: 1px solid rgba(33, 150, 243, 0.3);
-}
-
-/* 偏离度图标 - 橙色主题 */
-.summary-card .deviation-icon {
-  background: rgba(255, 152, 0, 0.15);
-  border: 1px solid rgba(255, 152, 0, 0.3);
+/* 图标悬停效果 */
+.summary-card:hover .card-icon {
+  box-shadow:
+    0 6px 20px rgba(77, 163, 255, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 2px 10px rgba(77, 163, 255, 0.15);
+  border-color: rgba(77, 163, 255, 0.4);
+  transform: scale(1.05);
 }
 
 /* 卡片内容区 */
@@ -77,4 +173,80 @@
   font-size: 24px;
   font-weight: 700;
   color: var(--text-primary);
+  text-shadow:
+    0 0 10px rgba(77, 163, 255, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ========== 图表容器液态玻璃效果 ========== */
+
+/* 环形图容器 - 蓝色液态玻璃效果 */
+.charts-section .chart-container {
+  background:
+    linear-gradient(135deg,
+      rgba(77, 163, 255, 0.08) 0%,
+      rgba(77, 163, 255, 0.12) 50%,
+      rgba(77, 163, 255, 0.08) 100%
+    );
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 2px 20px rgba(77, 163, 255, 0.08),
+    inset 0 -2px 20px rgba(77, 163, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  text-align: center;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 图表容器液态流动动画效果 */
+.charts-section .chart-container::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(77, 163, 255, 0.08) 0%,
+    transparent 50%
+  );
+  animation: chartLiquidFlow 10s ease-in-out infinite;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+@keyframes chartLiquidFlow {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(30px, -30px) rotate(120deg);
+  }
+  66% {
+    transform: translate(-20px, 20px) rotate(240deg);
+  }
+}
+
+/* 图表容器悬停效果 */
+.charts-section .chart-container:hover {
+  box-shadow:
+    0 12px 40px rgba(77, 163, 255, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 2px 20px rgba(77, 163, 255, 0.12);
+  transform: translateY(-4px);
+  border-color: rgba(77, 163, 255, 0.3);
+}
+
+.charts-section .chart-container:hover::before {
+  opacity: 1;
 }
