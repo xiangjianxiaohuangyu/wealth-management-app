@@ -1,25 +1,110 @@
-/* ========== 设置页面 ========== */
+/* 设置页面样式 - 橙色液态玻璃效果 */
 
-/* 设置内容区 */
 .settings-content {
-  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow-y: auto;
+  padding-right: 12px;
+  padding-bottom: 20px;
 }
 
-/* 设置组 */
+/* 设置组 - 橙色液态玻璃卡片 */
 .setting-group {
-  background: var(--card-bg);
-  padding: 24px;
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  margin-bottom: 24px;
+  background:
+    linear-gradient(135deg,
+      rgba(251, 146, 60, 0.15) 0%,
+      rgba(249, 115, 22, 0.2) 50%,
+      rgba(251, 146, 60, 0.15) 100%
+    );
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 28px;
+  margin-bottom: 0;
+}
+
+.setting-group::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(251, 146, 60, 0.1) 0%,
+    transparent 50%
+  );
+  pointer-events: none;
+  border-radius: 24px;
+}
+
+.setting-group::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 24px;
+  pointer-events: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 2px 20px rgba(251, 146, 60, 0.15),
+    inset 0 -2px 20px rgba(249, 115, 22, 0.1);
+  z-index: 1;
+}
+
+.setting-group:hover {
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-4px);
+  background:
+    linear-gradient(135deg,
+      rgba(251, 146, 60, 0.2) 0%,
+      rgba(249, 115, 22, 0.25) 50%,
+      rgba(251, 146, 60, 0.2) 100%
+    );
+}
+
+.setting-group:hover::after {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 2px 30px rgba(251, 146, 60, 0.25),
+    inset 0 -2px 30px rgba(249, 115, 22, 0.15);
 }
 
 /* 设置组标题 */
 .setting-group h3 {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
-  margin-bottom: 20px;
-  color: var(--text-primary);
+  margin-bottom: 24px;
+  color: rgba(255, 255, 255, 0.98);
+  text-shadow:
+    0 0 20px rgba(251, 146, 60, 0.5),
+    0 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.5px;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.setting-group h3::before {
+  content: '🎯';
+  font-size: 24px;
+  filter:
+    drop-shadow(0 0 12px rgba(251, 146, 60, 0.6))
+    drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 /* 设置项 */
@@ -27,8 +112,25 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 0;
-  border-bottom: 1px solid var(--border-color);
+  padding: 18px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 2;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.setting-item:hover {
+  padding-left: 12px;
+  padding-right: 12px;
+  background:
+    linear-gradient(135deg,
+      rgba(251, 146, 60, 0.08) 0%,
+      rgba(249, 115, 22, 0.1) 100%
+    );
+  border-radius: 12px;
+  margin-left: -12px;
+  margin-right: -12px;
+  border-bottom-color: transparent;
 }
 
 /* 设置项最后一项 */
@@ -38,32 +140,196 @@
 
 /* 设置项标签 */
 .setting-item label {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
-  color: var(--text-primary);
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-/* 设置项选择器 */
+/* 设置项选择器和输入框 */
 .setting-item select,
 .setting-item input[type="number"] {
   width: 200px;
+  background:
+    linear-gradient(135deg,
+      rgba(251, 146, 60, 0.15) 0%,
+      rgba(249, 115, 22, 0.2) 100%
+    );
+  backdrop-filter: blur(25px) saturate(160%);
+  -webkit-backdrop-filter: blur(25px) saturate(160%);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 10px 16px;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
 }
 
-/* ========== 操作按钮 ========== */
-/* 按钮：导出数据 */
-.btn-export-data {
-  background-color: #95a5a6;
-  color: white;
+.setting-item select:hover,
+.setting-item input[type="number"]:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.12);
 }
 
-/* 按钮：导入数据 */
+.setting-item select:focus,
+.setting-item input[type="number"]:focus {
+  border-color: rgba(251, 146, 60, 0.6);
+  box-shadow:
+    0 6px 20px rgba(251, 146, 60, 0.3),
+    0 0 0 3px rgba(251, 146, 60, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.setting-item select option {
+  background: rgba(30, 41, 59, 0.95);
+  color: rgba(255, 255, 255, 0.95);
+  padding: 10px;
+}
+
+/* 设置工作区滚动条样式 */
+.settings-content::-webkit-scrollbar {
+  width: 10px;
+}
+
+.settings-content::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.3);
+  border-radius: 5px;
+}
+
+.settings-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    135deg,
+    rgba(251, 146, 60, 0.6) 0%,
+    rgba(249, 115, 22, 0.7) 100%
+  );
+  border-radius: 5px;
+  border: 2px solid rgba(15, 23, 42, 0.3);
+}
+
+.settings-content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(251, 146, 60, 0.8) 0%,
+    rgba(249, 115, 22, 0.9) 100%
+  );
+}
+
+/* ========== 操作按钮 - 橙色液态玻璃效果 ========== */
+.setting-item {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.btn-export-data,
 .btn-import-data {
-  background-color: #95a5a6;
-  color: white;
+  background:
+    linear-gradient(135deg,
+      rgba(251, 146, 60, 0.25) 0%,
+      rgba(249, 115, 22, 0.3) 100%
+    );
+  backdrop-filter: blur(25px) saturate(160%);
+  -webkit-backdrop-filter: blur(25px) saturate(160%);
+  color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 12px 24px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-shadow:
+    0 0 12px rgba(251, 146, 60, 0.4),
+    0 1px 2px rgba(0, 0, 0, 0.2);
+  letter-spacing: 0.3px;
+  position: relative;
+  overflow: hidden;
 }
 
-/* 按钮：重置数据 */
+.btn-export-data:hover,
+.btn-import-data:hover {
+  background:
+    linear-gradient(135deg,
+      rgba(251, 146, 60, 0.35) 0%,
+      rgba(249, 115, 22, 0.4) 100%
+    );
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow:
+    0 8px 28px rgba(251, 146, 60, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.btn-export-data:active,
+.btn-import-data:active {
+  transform: translateY(0);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* 按钮：重置数据 - 红色警示风格 */
 .btn-reset-data {
-  background-color:#f44336;
-  color: white;
+  background:
+    linear-gradient(135deg,
+      rgba(239, 68, 68, 0.25) 0%,
+      rgba(220, 38, 38, 0.3) 100%
+    );
+  backdrop-filter: blur(25px) saturate(160%);
+  -webkit-backdrop-filter: blur(25px) saturate(160%);
+  color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 12px 24px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow:
+    0 6px 20px rgba(239, 68, 68, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-shadow:
+    0 0 12px rgba(239, 68, 68, 0.4),
+    0 1px 2px rgba(0, 0, 0, 0.2);
+  letter-spacing: 0.3px;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-reset-data:hover {
+  background:
+    linear-gradient(135deg,
+      rgba(239, 68, 68, 0.35) 0%,
+      rgba(220, 38, 38, 0.4) 100%
+    );
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow:
+    0 8px 28px rgba(239, 68, 68, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.btn-reset-data:active {
+  transform: translateY(0);
+  box-shadow:
+    0 4px 16px rgba(239, 68, 68, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.1);
 }

@@ -39,7 +39,6 @@
     rgba(102, 126, 234, 0.1) 0%,
     transparent 50%
   );
-  animation: liquidFlow 8s ease-in-out infinite;
   pointer-events: none;
   border-radius: 24px;
 }
