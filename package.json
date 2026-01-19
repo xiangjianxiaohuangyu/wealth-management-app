@@ -1,6 +1,6 @@
 {
   "name": "wealth-management-app",
-  "version": "0.0.4",
+  "version": "0.1.7",
   "main": "src/main/main.js",
   "scripts": {
     "start": "electron .",
@@ -20,7 +20,8 @@
     },
     "files": [
       "src/**/*",
-      "package.json"
+      "package.json",
+      "changelog*.md"
     ],
     "directories": {
       "output": "release"

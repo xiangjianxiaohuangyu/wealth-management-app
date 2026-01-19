@@ -5,15 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>财富管理 - Wealth Management</title>
   <!-- 全局基础样式 -->
-  <link rel="stylesheet" href="pages/styles/global.css">
+  <link rel="stylesheet" href="../styles/global.css">
   <!-- 全局组件样式 -->
-  <link rel="stylesheet" href="pages/styles/components.css">
+  <link rel="stylesheet" href="../styles/components.css">
   <!-- 资产总览页面样式 -->
   <link rel="stylesheet" href="pages/overview/overview.css">
-  <!-- 计划编辑页面样式 -->
+  <!-- 投资规划页面样式 -->
   <link rel="stylesheet" href="pages/planning/planning.css">
   <!-- 设置页面样式 -->
   <link rel="stylesheet" href="pages/settings/setting.css">
+  <!-- 更新日志页面样式 -->
+  <link rel="stylesheet" href="pages/changelog/changelog.css">
 </head>
 <body>
   <div class="app-container">
@@ -30,11 +32,15 @@
         </li>
         <li class="nav-item" data-page="planning">
           <span class="icon">📋</span>
-          <span class="text">计划编辑</span>
+          <span class="text">投资规划</span>
         </li>
         <li class="nav-item" data-page="settings">
           <span class="icon">⚙️</span>
           <span class="text">设置</span>
+        </li>
+        <li class="nav-item" data-page="changelog">
+          <span class="icon">📝</span>
+          <span class="text">更新日志</span>
         </li>
       </ul>
       <div class="sidebar-footer">
@@ -53,21 +59,21 @@
         <div class="overview-content">
           <div class="summary-cards">
             <div class="summary-card">
-              <div class="card-icon">💰</div>
+              <div class="card-icon total-assets-icon">💰</div>
               <div class="card-content">
                 <p class="card-label">总资产</p>
                 <p class="card-value" id="total-assets">¥ 0.00</p>
               </div>
             </div>
             <div class="summary-card">
-              <div class="icon">📈</div>
+              <div class="card-icon planned-assets-icon">📈</div>
               <div class="card-content">
                 <p class="card-label">计划资产</p>
                 <p class="card-value" id="planned-assets">¥ 0.00</p>
               </div>
             </div>
             <div class="summary-card">
-              <div class="icon">⚖️</div>
+              <div class="card-icon deviation-icon">⚖️</div>
               <div class="card-content">
                 <p class="card-label">偏离度</p>
                 <p class="card-value" id="deviation">0.00%</p>
@@ -85,10 +91,10 @@
         </div>
       </div>
 
-      <!-- 计划编辑页面 -->
+      <!-- 投资规划页面 -->
       <div id="page-planning" class="page">
         <div class="page-header">
-          <h2>计划编辑</h2>
+          <h2>投资规划</h2>
           <p class="description">管理您的投资组合配置</p>
         </div>
         <div class="planning-content">
@@ -182,6 +188,47 @@
           </div>
         </div>
       </div>
+
+      <!-- 更新日志页面 -->
+      <div id="page-changelog" class="page">
+        <div class="page-header">
+          <h2>更新日志</h2>
+          <p class="description">查看版本更新和未来规划</p>
+        </div>
+        <div class="changelog-content">
+          <!-- 后续更新安排 -->
+          <div class="changelog-section upcoming-section" id="upcoming-section">
+            <div class="section-header" data-toggle="upcoming-section">
+              <h3>
+                <span class="icon">🚀</span>
+                后续更新安排
+              </h3>
+              <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content">
+              <div class="markdown-content" id="upcoming-features">
+                <p class="loading">加载中...</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 更新日志列表 -->
+          <div class="changelog-section history-section" id="history-section">
+            <div class="section-header" data-toggle="history-section">
+              <h3>
+                <span class="icon">📜</span>
+                更新日志
+              </h3>
+              <span class="toggle-icon">▼</span>
+            </div>
+            <div class="section-content">
+              <div class="markdown-content" id="changelog-list">
+                <p class="loading">加载中...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
   </div>
 
@@ -250,10 +297,12 @@
   <script src="utils/notifications.js"></script>
   <script src="utils/charts.js"></script>
   <script src="utils/electron.js"></script>
+  <script src="utils/updaters.js"></script>
   <!-- 页面逻辑 -->
   <script src="pages/overview/overview.js"></script>
   <script src="pages/planning/planning.js"></script>
   <script src="pages/settings/setting.js"></script>
+  <script src="pages/changelog/changelog.js"></script>
   <!-- 主入口 -->
   <script src="main.js"></script>
 </body>

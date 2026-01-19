@@ -15,7 +15,8 @@ function setupNavigation() {
       pages.forEach(page => page.classList.remove('active'));
       document.getElementById(`page-${pageName}`).classList.add('active');
 
-      if (pageName === 'planning') {
+      // 每次切换页面都重新绘制图表，以显示初始加载动画
+      if (pageName === 'overview' || pageName === 'planning') {
         setTimeout(() => drawAllCharts(), 100);
       }
     });
@@ -29,6 +30,7 @@ function init() {
   initOverview();
   initPlanning();
   initSettings();
+  initChangelog();
   loadAppVersion();
   setupUpdateListeners();
 }

@@ -6,7 +6,8 @@
       "Bash(npx electron:*)",
       "Bash(test:*)",
       "Bash(tree:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(timeout:*)"
     ]
   }
 }

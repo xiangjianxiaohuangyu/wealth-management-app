@@ -90,7 +90,7 @@ function showConfirm(message, onConfirm, onCancel) {
 
   const cancelBtn = document.createElement('button');
   cancelBtn.textContent = '取消';
-  cancelBtn.className = 'btn btn-secondary';
+  cancelBtn.className = 'btn btn-delete';
   cancelBtn.style.cssText = `
     padding: 10px 20px;
     font-size: 14px;
@@ -98,7 +98,7 @@ function showConfirm(message, onConfirm, onCancel) {
 
   const confirmBtn = document.createElement('button');
   confirmBtn.textContent = '确定';
-  confirmBtn.className = 'btn btn-danger';
+  confirmBtn.className = 'btn btn-confirm';
   confirmBtn.style.cssText = `
     padding: 10px 20px;
     font-size: 14px;

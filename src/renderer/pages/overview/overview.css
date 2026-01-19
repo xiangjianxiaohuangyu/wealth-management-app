@@ -26,16 +26,38 @@
   transform: translateY(-2px);
 }
 
-/* 概览卡片图标 */
-.summary-card .icon {
+/* 概览卡片图标基础样式 */
+.summary-card .card-icon {
   font-size: 36px;
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--primary-color), #1976D2);
   border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 总资产图标 - 更大且带有绿色主题 */
+.summary-card .total-assets-icon {
+  font-size: 42px;
+  width: 72px;
+  height: 72px;
+  background: rgba(76, 175, 80, 0.15);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+/* 计划资产图标 - 蓝色主题 */
+.summary-card .planned-assets-icon {
+  background: rgba(33, 150, 243, 0.15);
+  border: 1px solid rgba(33, 150, 243, 0.3);
+}
+
+/* 偏离度图标 - 橙色主题 */
+.summary-card .deviation-icon {
+  background: rgba(255, 152, 0, 0.15);
+  border: 1px solid rgba(255, 152, 0, 0.3);
 }
 
 /* 卡片内容区 */

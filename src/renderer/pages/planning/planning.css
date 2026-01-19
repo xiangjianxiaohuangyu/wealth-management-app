@@ -204,6 +204,26 @@ select {
   color: var(--text-primary);
 }
 
+/* 禁用输入框样式 */
+input[type="text"]:disabled,
+input[type="number"]:disabled,
+select:disabled {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+  color: rgba(255, 255, 255, 0.3) !important;
+  cursor: not-allowed !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  opacity: 0.6;
+}
+
+/* 禁用输入框无法获得焦点 */
+input[type="text"]:disabled:focus,
+input[type="number"]:disabled:focus,
+select:disabled:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
 /* 移除数字输入框的增减按钮 */
 input[type="number"] {
   -moz-appearance: textfield;

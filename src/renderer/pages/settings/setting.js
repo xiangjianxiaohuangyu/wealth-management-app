@@ -1,5 +1,64 @@
 // 设置页面逻辑
 
+// ========== 数据管理函数 ==========
+
+// 导出数据
+function exportData() {
+  const dataStr = JSON.stringify(appState, null, 2);
+  const blob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `wealth-management-${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// 导入数据
+async function importData() {
+  return new Promise((resolve, reject) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const imported = JSON.parse(event.target.result);
+          Object.assign(appState, imported);
+          saveState();
+          resolve(true);
+        } catch (err) {
+          reject(err);
+        }
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  });
+}
+
+// 重置数据
+function resetData() {
+  const totalInvestment = 380000;
+  Object.assign(appState, {
+    totalInvestment: totalInvestment,
+    assets: [
+      { id: 1, name: '股票', mode: 'percentage', plannedValue: 40, actualValue: 152000 },
+      { id: 2, name: '债券', mode: 'percentage', plannedValue: 30, actualValue: 114000 },
+      { id: 3, name: '黄金', mode: 'percentage', plannedValue: 15, actualValue: 57000 },
+      { id: 4, name: '现金', mode: 'percentage', plannedValue: 15, actualValue: 57000 }
+    ],
+    currency: 'CNY',
+    deviationThreshold: 5,
+    nextId: 5
+  });
+  saveState();
+}
+
+// ========== 事件处理函数 ==========
+
 // 导出数据
 function handleExportData() {
   exportData();

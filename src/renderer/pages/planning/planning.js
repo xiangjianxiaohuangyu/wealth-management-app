@@ -1,5 +1,6 @@
 // 计划编辑页面逻辑
 
+// ========== 渲染和交互函数 ==========
 // 渲染资产列表
 function renderAssetsList() {
   const container = document.getElementById('assets-list');
@@ -75,7 +76,7 @@ function createAssetRow(asset) {
   percentageBtn.addEventListener('click', () => {
     updateAssetMode(asset.id, 'percentage');
     renderAssetsList();
-    drawAllCharts();
+    drawPlannedChart();
     updateUnallocatedAmount();
   });
 
@@ -85,7 +86,7 @@ function createAssetRow(asset) {
   amountBtn.addEventListener('click', () => {
     updateAssetMode(asset.id, 'amount');
     renderAssetsList();
-    drawAllCharts();
+    drawPlannedChart();
     updateUnallocatedAmount();
   });
 
@@ -110,6 +111,7 @@ function createAssetRow(asset) {
   plannedInput.style.fontSize = '13px';
   plannedInput.style.padding = '6px 10px';
   plannedInput.disabled = asset.mode !== 'percentage';
+  
   plannedInput.addEventListener('input', (e) => {
     const result = updateAssetPlanned(asset.id, e.target.value);
     if (result && result.adjusted) {
@@ -121,7 +123,7 @@ function createAssetRow(asset) {
     }
     updateAssetRowDisplay(asset);
     updateOverview();
-    drawAllCharts();
+    drawPlannedChart();
     updateUnallocatedAmount();
   });
   plannedInput.addEventListener('blur', (e) => {
@@ -171,7 +173,7 @@ function createAssetRow(asset) {
     }
     updateAssetRowDisplay(asset);
     updateOverview();
-    drawAllCharts();
+    drawPlannedChart();
     updateUnallocatedAmount();
   });
   plannedAmountDisplay.addEventListener('keydown', (e) => {
@@ -207,7 +209,7 @@ function createAssetRow(asset) {
     updateAssetActual(asset.id, e.target.value);
     updateAssetRowDisplay(asset);
     updateOverview();
-    drawAllCharts();
+    drawActualChart();
   });
   actualValueDisplay.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
@@ -299,7 +301,12 @@ function updateAssetRowDisplay(asset) {
     const plannedAmountInput = row.querySelectorAll('.row-cell')[3].querySelector('input');
     if (plannedAmountInput) {
       plannedAmountInput.value = plannedAmount.toFixed(2);
-      plannedAmountInput.disabled = false;
+      plannedAmountInput.disabled = true;
+    }
+
+    const plannedPercentInput = row.querySelectorAll('.row-cell')[2].querySelector('input');
+    if (plannedPercentInput) {
+      plannedPercentInput.disabled = false;
     }
   } else {
     plannedAmount = asset.plannedValue;
@@ -309,6 +316,11 @@ function updateAssetRowDisplay(asset) {
     if (plannedPercentInput) {
       plannedPercentInput.value = plannedPercent.toFixed(2);
       plannedPercentInput.disabled = true;
+    }
+
+    const plannedAmountInput = row.querySelectorAll('.row-cell')[3].querySelector('input');
+    if (plannedAmountInput) {
+      plannedAmountInput.disabled = false;
     }
   }
 
@@ -552,4 +564,169 @@ function initPlanning() {
 
   document.getElementById('close-import-modal').addEventListener('click', closeImportPlanModal);
   document.getElementById('cancel-import-plan').addEventListener('click', closeImportPlanModal);
+}
+
+
+// ========== 资产管理函数 ==========
+// 更新总投资金额
+function updateTotalInvestment(value) {
+  let numValue = parseFloat(value);
+
+  if (isNaN(numValue) || numValue < 0) {
+    return false;
+  }
+
+  appState.totalInvestment = numValue;
+  saveState();
+  return true;
+}
+
+// 添加资产
+function addAsset() {
+  let assetNumber = 1;
+  let newName;
+  let nameExists;
+
+  do {
+    newName = `新资产${assetNumber}`;
+    nameExists = appState.assets.some(asset => asset.name === newName);
+    if (nameExists) {
+      assetNumber++;
+    }
+  } while (nameExists);
+
+  const newAsset = {
+    id: appState.nextId++,
+    name: newName,
+    mode: 'percentage',
+    plannedValue: 0,
+    actualValue: 0
+  };
+
+  appState.assets.push(newAsset);
+  saveState();
+  return newAsset;
+}
+
+// 删除资产
+function deleteAsset(id) {
+  appState.assets = appState.assets.filter(a => a.id !== id);
+  saveState();
+}
+
+// 更新资产名称
+function updateAssetName(id, name) {
+  const asset = appState.assets.find(a => a.id === id);
+  if (!asset) return false;
+
+  const duplicate = appState.assets.find(a => a.id !== id && a.name === name);
+  if (duplicate) return false;
+
+  asset.name = name;
+  saveState();
+  return true;
+}
+
+// 更新资产模式
+function updateAssetMode(id, mode) {
+  const asset = appState.assets.find(a => a.id === id);
+  if (!asset) return;
+
+  const totalAssets = getTotalAssets();
+
+  if (mode === 'amount' && asset.mode === 'percentage') {
+    asset.plannedValue = (asset.plannedValue / 100) * totalAssets;
+  } else if (mode === 'percentage' && asset.mode === 'amount') {
+    asset.plannedValue = totalAssets > 0 ? (asset.plannedValue / totalAssets * 100) : 0;
+  }
+
+  asset.mode = mode;
+  saveState();
+}
+
+// 更新计划值（百分比）
+function updateAssetPlanned(id, value) {
+  const asset = appState.assets.find(a => a.id === id);
+  if (!asset || asset.mode !== 'percentage') return false;
+
+  let numValue = parseFloat(value);
+  if (isNaN(numValue) || numValue < 0) return false;
+
+  // 如果超过 100，先限制为 100
+  if (numValue > 100) {
+    numValue = 100;
+  }
+
+  let otherPercentageTotal = 0;
+  appState.assets.forEach(a => {
+    if (a.id !== id && a.mode === 'percentage') {
+      otherPercentageTotal += a.plannedValue;
+    }
+  });
+
+  const maxAllowedPercentage = 100 - otherPercentageTotal;
+  const originalInputValue = parseFloat(value);
+  let wasAdjusted = false;
+
+  // 如果超过最大允许值，调整为最大值
+  if (numValue > maxAllowedPercentage) {
+    numValue = maxAllowedPercentage;
+    wasAdjusted = true;
+  }
+
+  // 检查是否被调整（包括超过100的情况）
+  if (numValue !== originalInputValue) {
+    wasAdjusted = true;
+  }
+
+  asset.plannedValue = numValue;
+  saveState();
+  return { success: true, adjusted: wasAdjusted };
+}
+
+// 更新计划金额（金额模式）
+function updateAssetPlannedAmount(id, value) {
+  const asset = appState.assets.find(a => a.id === id);
+  if (!asset || asset.mode !== 'amount') return false;
+
+  let numValue = parseFloat(value);
+  if (isNaN(numValue) || numValue < 0) return false;
+
+  let otherAssetsTotal = 0;
+  appState.assets.forEach(a => {
+    if (a.id !== id) {
+      if (a.mode === 'percentage') {
+        otherAssetsTotal += (a.plannedValue / 100) * appState.totalInvestment;
+      } else {
+        otherAssetsTotal += a.plannedValue;
+      }
+    }
+  });
+
+  const maxAllowedAmount = appState.totalInvestment - otherAssetsTotal;
+  if (numValue > maxAllowedAmount) {
+    numValue = maxAllowedAmount;
+  }
+
+  asset.plannedValue = numValue;
+  saveState();
+  return { success: true, adjusted: numValue !== parseFloat(value) };
+}
+
+// 更新实际值
+function updateAssetActual(id, value) {
+  const asset = appState.assets.find(a => a.id === id);
+  if (!asset) return false;
+
+  let numValue = parseFloat(value);
+  if (isNaN(numValue) || numValue < 0) return false;
+
+  asset.actualValue = numValue;
+  saveState();
+  return true;
+}
+
+// 获取资产
+function getAsset(id) {
+  return appState.assets.find(a => a.id === id);
 }

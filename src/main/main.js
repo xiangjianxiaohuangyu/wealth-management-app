@@ -7,9 +7,16 @@ const log = require('electron-log');
 // 配置日志
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
+autoUpdater.logger.transports.console.level = 'debug';  // 添加控制台日志
+
+log.info('=== Application Starting ===');
+log.info('Node version:', process.versions.node);
+log.info('Electron version:', process.versions.electron);
+log.info('Chrome version:', process.versions.chrome);
+log.info('autoDownload initial value:', autoUpdater.autoDownload);
 
 // 配置自动更新行为
-autoUpdater.autoDownload = true;  // 自动下载更新（无需用户手动点击）
+autoUpdater.autoDownload = false;  // 不自动下载更新，需要用户确认后才下载
 autoUpdater.autoInstallOnAppQuit = false;  // 不在退出时自动安装，而是提示用户
 log.info('App starting...');
 
@@ -36,6 +43,10 @@ function createWindow() {
 
   // 应用启动后自动检查更新（延迟1秒）
   setTimeout(() => {
+    // 确保在检查更新之前，自动下载已关闭
+    autoUpdater.autoDownload = false;
+    log.info('autoDownload set to false before checking updates');
+
     // 配置更新服务器地址
     autoUpdater.setFeedURL({
       provider: 'github',
@@ -156,6 +167,24 @@ ipcMain.handle('get-app-version', async () => {
   }
 });
 
+// 读取项目目录中的文件（用于更新日志等）
+ipcMain.handle('read-project-file', async (_event, fileName) => {
+  const projectRoot = path.join(__dirname, '../..');
+  const filePath = path.join(projectRoot, fileName);
+
+  try {
+    if (fs.existsSync(filePath)) {
+      const content = fs.readFileSync(filePath, 'utf-8');
+      return { success: true, content };
+    } else {
+      return { success: false, error: '文件不存在' };
+    }
+  } catch (error) {
+    console.error('Error reading file:', error);
+    return { success: false, error: error.message };
+  }
+});
+
 // ========== 自动更新功能 ==========
 
 let mainWindow = null;
@@ -164,6 +193,9 @@ let mainWindow = null;
 ipcMain.handle('check-for-updates', async () => {
   try {
     log.info('Checking for updates...');
+    // 确保自动下载已关闭
+    autoUpdater.autoDownload = false;
+    log.info('autoDownload set to false before manual check');
     autoUpdater.checkForUpdates();
     return { success: true };
   } catch (error) {
@@ -200,9 +232,18 @@ ipcMain.handle('install-update', async () => {
 
 // 自动更新事件处理
 function setupAutoUpdater() {
+  // 在设置任何事件监听器之前，确保自动下载已关闭
+  autoUpdater.autoDownload = false;
+  autoUpdater.autoInstallOnAppQuit = false;
+  log.info('setupAutoUpdater: autoDownload and autoInstallOnAppQuit set to false');
+
   // 当发现可用更新时
   autoUpdater.on('update-available', (info) => {
     log.info('Update available:', info);
+    // 确保不会自动下载
+    autoUpdater.autoDownload = false;
+    log.info('update-available event: autoDownload set to false again');
+
     if (mainWindow) {
       mainWindow.webContents.send('update-available', {
         version: info.version,
@@ -224,7 +265,13 @@ function setupAutoUpdater() {
 
   // 下载进度
   autoUpdater.on('download-progress', (progress) => {
-    log.info('Download progress:', progress);
+    log.warn('Unexpected download progress detected!', progress);
+    log.warn('autoDownload was supposed to be false!');
+    // 如果不应该下载，记录警告
+    if (!autoUpdater.autoDownload) {
+      log.error('ERROR: Download started despite autoDownload being false!');
+    }
+
     if (mainWindow) {
       mainWindow.webContents.send('update-download-progress', {
         percent: progress.percent,
