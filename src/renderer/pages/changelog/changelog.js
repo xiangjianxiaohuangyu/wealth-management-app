@@ -74,13 +74,67 @@ function escapeHtml(text) {
   return text.replace(/[&<>"']/g, m => map[m]);
 }
 
+// 解析卡片式功能列表
+function parseFeatureCards(markdown) {
+  if (!markdown) return '<p class="empty-state">暂无后续更新安排</p>';
+
+  // 分割成不同的功能块
+  const sections = markdown.split(/(?=^###\s+)/m).filter(s => s.trim());
+
+  if (sections.length === 0) {
+    return '<p class="empty-state">暂无后续更新安排</p>';
+  }
+
+  const cards = sections.map(section => {
+    // 提取标题 (### 开头)
+    const titleMatch = section.match(/^###\s+(.+)$/m);
+    const title = titleMatch ? titleMatch[1].trim() : '未命名功能';
+
+    // 提取所有以 - 开头的行
+    const lines = section.split('\n').filter(line => line.trim().startsWith('-'));
+
+    let description = '暂无描述';
+    let statusText = '计划中';
+    let statusClass = 'planned';
+
+    // 第一行是描述
+    if (lines.length >= 1) {
+      description = lines[0].replace(/^-\s+/, '').trim();
+    }
+
+    // 第二行是状态
+    if (lines.length >= 2) {
+      statusText = lines[1].replace(/^-\s+/, '').trim();
+
+      // 根据状态文本设置样式类
+      if (statusText.includes('完成') || statusText.toLowerCase().includes('completed')) {
+        statusClass = 'completed';
+      } else if (statusText.includes('即将推出') || statusText.toLowerCase().includes('coming soon')) {
+        statusClass = 'coming-soon';
+      } else {
+        statusClass = 'planned';
+      }
+    }
+
+    return `
+      <div class="feature-card">
+        <h3 class="feature-card-title">${escapeHtml(title)}</h3>
+        <p class="feature-card-description">${escapeHtml(description)}</p>
+        <span class="feature-card-status ${statusClass}">${escapeHtml(statusText)}</span>
+      </div>
+    `;
+  }).join('');
+
+  return `<div class="feature-cards-container">${cards}</div>`;
+}
+
 // 加载后续更新安排
 async function loadUpcomingFeatures() {
   const container = document.getElementById('upcoming-features');
 
   try {
     const content = await window.electron.readFile('changelog_upcoming.md');
-    container.innerHTML = parseMarkdown(content);
+    container.innerHTML = parseFeatureCards(content);
   } catch (error) {
     console.error('加载后续更新安排失败:', error);
     container.innerHTML = `

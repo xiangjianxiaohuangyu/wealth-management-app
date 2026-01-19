@@ -1,6 +1,6 @@
 {
   "name": "wealth-management-app",
-  "version": "0.1.7",
+  "version": "0.2.1",
   "main": "src/main/main.js",
   "scripts": {
     "start": "electron .",
